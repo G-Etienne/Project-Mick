@@ -1,23 +1,25 @@
+// router --> const express = require('express');
 const express = require('express');
-//for parsing and put in the mysql database the csv file 
-const csvData = require('../middleware/cvs_data_parser');
+const csvFile = './app/data/csvData.csv';
+const csvToJson = require('../middleware/csv_to_json');
+const fullData = require('../middleware/fullObject');
+
+const userFusion = require('../middleware/userFusion');
 
 const router = express.Router();
 
-//change csv data to json data
-router.get('/datacsv', (req, res) => {
-    //csv file location
-    const csvFile = './app/data/csvData.csv';
-
-    //try to convert csv file
-    csvData.convertCsvToJson(csvFile, (err, jsonData) => {
-        if (err) {
-            console.log(err);
-            res.status(500).json({error : 'error with the JSON convertion'});
-        } else {
-            res.json({success: true, message: 'JSON convertion done', data: jsonData});
-        }
-    })
-})
+// change csv data to json data
+router.get('/datacsv', async (req, res) => {
+    userFusion()
+    try {
+        const jsonData = await csvToJson(csvFile);
+        const theFullData = await fullData(jsonData);
+        console.log('conversion csv to json done');
+        res.json(theFullData); // Send the JSON data as a response to the client
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'An error occurred' });
+    }
+});
 
 module.exports = router;

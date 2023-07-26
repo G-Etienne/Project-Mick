@@ -5,7 +5,7 @@ const db = require('../../config/db');
 //Get the users informations
 //http://localhost:54600/api/users
 const getAllUsers = (req, res) => {
-    db.query('SELECT * FROM bo_addresses', (error, results) => {
+    db.query('SELECT * FROM bo_users', (error, results) => {
         if(error){
             console.error(error);
             res.status(500).json({error: error});

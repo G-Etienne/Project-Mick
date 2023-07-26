@@ -1,15 +1,12 @@
 //importation for parsing csv, raeding it and converting it
 const csv = require('csv-parser');
 const fs = require('fs');
+let data = [];
 
-//storing the data in the mysql database
-const storage = require('../middleware/csvJson_to_sql');
-
-function convertCsvToJson(csvFile, callback){
-    const data = [];
+function convertCsvToJson(csvData){
 
     //converting csv file into json file
-    fs.createReadStream(csvFile)
+    fs.createReadStream(csvData)
         .pipe(csv({separator:';'}))
         .on('data', (row) => {
           const rowData = {};
@@ -21,14 +18,13 @@ function convertCsvToJson(csvFile, callback){
             })
           }
           data.push(rowData);
-        })
-        .on('end', () => {          
-            //put the csv data in mysql database
-            callback(storage(data));
+
         })
         .on('error', (err) => {
             callback(err);
-        })
-}
+        }) 
+        return data;
 
-module.exports = {convertCsvToJson};
+};
+
+module.exports = convertCsvToJson;
